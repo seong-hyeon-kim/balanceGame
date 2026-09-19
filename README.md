@@ -2,7 +2,18 @@
 
 틱톡·인스타 등 SNS에서 자주 언급되는 밸런스 게임 주제(연애·썸, 음식, 마라맛 극한선택, 갓생·일상, 돈·직장, 디지털·SNS 습관)를 모은 웹 페이지입니다.
 
-## 실행 방법
+## 배포
+
+`claude/relaxed-dirac-gx9shv` 브랜치에 push할 때마다 `.github/workflows/pages.yml`
+워크플로가 GitHub Pages로 자동 배포합니다. 배포 주소는 아래와 같습니다.
+
+```
+https://seong-hyeon-kim.github.io/balanceGame/
+```
+
+(저장소 Actions 탭에서 배포 진행 상황을 확인할 수 있습니다.)
+
+## 로컬 실행
 
 빌드 과정이 필요 없는 순수 HTML/CSS/JS 프로젝트입니다. 로컬에서 정적 파일 서버로 열면 됩니다.
 
@@ -11,7 +22,8 @@ python3 -m http.server 8080
 # 브라우저에서 http://localhost:8080 접속
 ```
 
-또는 `index.html`을 브라우저로 바로 열어도 동작합니다.
+또는 `index.html`을 브라우저로 바로 열어도 동작합니다. 다만 **카카오톡 공유는 로컬/localhost에서
+동작하지 않으니** 카카오 공유까지 테스트하려면 위 배포 주소를 이용하세요.
 
 ## 구성
 
@@ -38,8 +50,11 @@ python3 -m http.server 8080
 
 1. https://developers.kakao.com 에서 애플리케이션 생성 후 **JavaScript 키**를 복사
 2. `kakao-config.js`의 `KAKAO_JS_KEY` 값에 붙여넣기
-3. 카카오 개발자 콘솔의 [앱 설정 > 플랫폼]에서 실제 배포 도메인(예: GitHub Pages 주소)을
-   Web 플랫폼으로 등록
+3. 카카오 개발자 콘솔의 **[앱] > [제품 링크 관리]** 에서 위 GitHub Pages 주소
+   (`https://seong-hyeon-kim.github.io/balanceGame/`)를 웹 도메인으로 등록
 
-키를 설정하지 않으면 카카오톡 공유 버튼을 눌렀을 때 자동으로 결과 텍스트를 클립보드에 복사하는
-방식으로 대체됩니다.
+카카오톡 공유하기 API는 `localhost`나 사설 IP 주소를 신뢰하지 않아서, 로컬 환경에서 테스트하면
+도메인을 등록해도 4019 에러가 날 수 있습니다. 반드시 위 배포 주소로 접속해서 테스트하세요.
+
+키를 설정하지 않았거나 공유 요청이 실패하면 카카오톡 공유 버튼을 눌렀을 때 자동으로 결과 텍스트를
+클립보드에 복사하는 방식으로 대체됩니다.
