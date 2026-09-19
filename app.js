@@ -366,6 +366,55 @@
     }
   }
 
+  // 마우스로 카테고리 바 아무 곳이나 눌러서 드래그하면 스크롤되도록 한다.
+  // (터치는 기본 스와이프로 이미 되지만, 마우스는 스크롤바 손잡이를 정확히
+  // 잡아야만 스크롤이 가능해서 불편하므로 캐러셀처럼 드래그를 지원한다.)
+  function enableDragToScroll(el) {
+    let isDown = false;
+    let dragged = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+    // 드래그로 스크롤되면 뒤이은 click을 한 번 무시해서 칩이 실수로 선택되지
+    // 않게 한다. mousedown 시점에 매번 리셋해야, 스크롤 때문에 mouseup이
+    // mousedown과 다른 엘리먼트 위에서 끝나 click 자체가 발생하지 않은
+    // 경우에도 이 플래그가 남아 다음 정상 클릭까지 막는 걸 방지할 수 있다.
+    let suppressNextClick = false;
+
+    el.addEventListener("mousedown", (e) => {
+      isDown = true;
+      dragged = false;
+      suppressNextClick = false;
+      startX = e.pageX;
+      startScrollLeft = el.scrollLeft;
+      el.classList.add("dragging");
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      const dx = e.pageX - startX;
+      if (Math.abs(dx) > 3) dragged = true;
+      el.scrollLeft = startScrollLeft - dx;
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (!isDown) return;
+      isDown = false;
+      el.classList.remove("dragging");
+      if (dragged) suppressNextClick = true;
+    });
+
+    el.addEventListener(
+      "click",
+      (e) => {
+        if (!suppressNextClick) return;
+        suppressNextClick = false;
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      true
+    );
+  }
+
   optionA.addEventListener("click", () => reveal("a"));
   optionB.addEventListener("click", () => reveal("b"));
   shuffleBtn.addEventListener("click", startGame);
@@ -374,5 +423,6 @@
   kakaoBtn.addEventListener("click", shareToKakao);
 
   renderCategoryBar();
+  enableDragToScroll(categoryBar);
   startGame();
 })();

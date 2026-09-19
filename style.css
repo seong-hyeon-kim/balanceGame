@@ -77,6 +77,12 @@ body {
   padding: 4px 2px 14px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.55) rgba(255, 255, 255, 0.15);
+  cursor: grab;
+}
+
+.category-bar.dragging {
+  cursor: grabbing;
+  user-select: none;
 }
 
 .category-bar::-webkit-scrollbar {
