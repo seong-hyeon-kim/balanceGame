@@ -25,7 +25,12 @@
   const resultSummary = document.getElementById("resultSummary");
   const restartBtn = document.getElementById("restartBtn");
   const shareBtn = document.getElementById("shareBtn");
+  const kakaoBtn = document.getElementById("kakaoBtn");
   const gameWrap = document.querySelector(".game-wrap");
+  const psychEmoji = document.getElementById("psychEmoji");
+  const psychTitle = document.getElementById("psychTitle");
+  const psychDesc = document.getElementById("psychDesc");
+  const traitBars = document.getElementById("traitBars");
 
   let currentCategory = "all";
   let deck = [];
@@ -195,14 +200,85 @@
     }
   }
 
+  // 답한 선택지들의 성향 태그를 세어 가장 많이 나온 성향(들)을 찾는다.
+  function computeTraitCounts() {
+    const counts = {};
+    history.forEach((h) => {
+      const trait = h.choice === "a" ? h.question.ta : h.question.tb;
+      if (!trait) return;
+      counts[trait] = (counts[trait] || 0) + 1;
+    });
+    return counts;
+  }
+
+  function computeResultType(counts) {
+    const entries = Object.entries(counts);
+    if (entries.length === 0) return null;
+    const maxCount = Math.max(...entries.map(([, c]) => c));
+    const topKeys = entries.filter(([, c]) => c === maxCount).map(([k]) => k);
+
+    if (topKeys.length === 1) {
+      return TYPES[topKeys[0]];
+    }
+
+    const [keyA, keyB] = topKeys;
+    const a = TYPES[keyA];
+    const b = TYPES[keyB];
+    return {
+      key: `${keyA}-${keyB}`,
+      name: `${a.name} + ${b.name}`,
+      emoji: `${a.emoji}${b.emoji}`,
+      title: `반반! ${a.name}×${b.name} 밸런서`,
+      desc: `${a.desc} 동시에, ${b.desc}`,
+    };
+  }
+
+  function renderPsychResult() {
+    const counts = computeTraitCounts();
+    const resultType = computeResultType(counts);
+
+    if (!resultType) {
+      psychEmoji.textContent = "🤔";
+      psychTitle.textContent = "아직 데이터가 부족해요";
+      psychDesc.textContent = "질문에 몇 개 더 답하면 성향을 분석해드릴게요!";
+      traitBars.innerHTML = "";
+      return null;
+    }
+
+    psychEmoji.textContent = resultType.emoji;
+    psychTitle.textContent = resultType.title;
+    psychDesc.textContent = resultType.desc;
+
+    const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
+    const rows = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, count]) => {
+        const trait = TYPES[key];
+        const pct = Math.round((count / total) * 100);
+        return `
+          <div class="trait-bar-row">
+            <span class="trait-bar-label">${trait.emoji} ${trait.name}</span>
+            <span class="trait-bar-track"><span class="trait-bar-fill" style="width:${pct}%"></span></span>
+            <span class="trait-bar-pct">${pct}%</span>
+          </div>
+        `;
+      })
+      .join("");
+    traitBars.innerHTML = rows;
+
+    return resultType;
+  }
+
+  let lastResultType = null;
+
   function showResult() {
     gameWrap.hidden = true;
     resultScreen.hidden = false;
     const catLabel = categoryLabel(currentCategory);
     resultSummary.innerHTML = `
-      <strong>${catLabel}</strong> 카테고리에서 총 <strong>${history.length}개</strong>의 밸런스 게임에 답했어요.<br/>
-      친구에게 공유해서 같이 골라보세요!
+      <strong>${catLabel}</strong> 카테고리에서 총 <strong>${history.length}개</strong>의 밸런스 게임에 답했어요.
     `;
+    lastResultType = renderPsychResult();
   }
 
   function buildShareText() {
@@ -212,7 +288,10 @@
       const chosenEmoji = h.choice === "a" ? h.question.ea : h.question.eb;
       return `${i + 1}. ${chosenEmoji} ${chosenText}`;
     });
-    return `🔥 밸런스 게임 (${catLabel})\n\n${lines.join("\n")}\n\n너라면 뭘 고를 거야?`;
+    const typeLine = lastResultType
+      ? `${lastResultType.emoji} 나는 "${lastResultType.title}" 타입!\n\n`
+      : "";
+    return `🔥 밸런스 게임 (${catLabel})\n\n${typeLine}${lines.join("\n")}\n\n너라면 뭘 고를 거야?`;
   }
 
   async function shareResult() {
@@ -224,10 +303,46 @@
       }
       await navigator.clipboard.writeText(text);
       shareBtn.textContent = "✅ 복사 완료!";
-      setTimeout(() => (shareBtn.textContent = "📋 결과 공유하기"), 1600);
+      setTimeout(() => (shareBtn.textContent = "📋 결과 복사하기"), 1600);
     } catch (e) {
       alert(text);
     }
+  }
+
+  // 카카오 JS SDK 초기화. kakao-config.js에 키가 없으면 그냥 건너뛴다.
+  const kakaoReady =
+    typeof Kakao !== "undefined" && typeof KAKAO_JS_KEY === "string" && KAKAO_JS_KEY.length > 0;
+  if (kakaoReady) {
+    try {
+      Kakao.init(KAKAO_JS_KEY);
+    } catch (e) {
+      /* 초기화 실패 시 카카오 공유 버튼은 클립보드 복사로 대체됨 */
+    }
+  }
+
+  function shareToKakao() {
+    const isInitialized = typeof Kakao !== "undefined" && Kakao.isInitialized && Kakao.isInitialized();
+    if (!isInitialized) {
+      shareResult();
+      alert(
+        "카카오톡 공유를 쓰려면 kakao-config.js에 카카오 JavaScript 키를 등록해야 해요.\n" +
+          "지금은 대신 결과를 클립보드에 복사했어요."
+      );
+      return;
+    }
+
+    const typeText = lastResultType ? `나는 "${lastResultType.title}" 타입!` : "밸런스 게임 결과";
+    const pageUrl = window.location.href.split("#")[0];
+
+    Kakao.Share.sendDefault({
+      objectType: "text",
+      text: `🔥 밸런스 게임 결과\n${typeText}\n\n너라면 뭘 고를 거야?`,
+      link: {
+        mobileWebUrl: pageUrl,
+        webUrl: pageUrl,
+      },
+      buttonTitle: "나도 해보기",
+    });
   }
 
   optionA.addEventListener("click", () => reveal("a"));
@@ -236,6 +351,7 @@
   shuffleBtn.addEventListener("click", startGame);
   restartBtn.addEventListener("click", startGame);
   shareBtn.addEventListener("click", shareResult);
+  kakaoBtn.addEventListener("click", shareToKakao);
 
   renderCategoryBar();
   startGame();

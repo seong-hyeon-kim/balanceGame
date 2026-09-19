@@ -112,6 +112,11 @@ body {
   gap: 16px;
 }
 
+.game-wrap[hidden],
+.result[hidden] {
+  display: none;
+}
+
 .progress-row {
   display: flex;
   align-items: center;
@@ -319,6 +324,87 @@ body {
 .result p {
   color: var(--text-muted);
   line-height: 1.6;
+}
+
+.psych-card {
+  margin-top: 20px;
+  padding: 20px 18px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(160deg, var(--a-color-soft), var(--b-color-soft));
+  text-align: center;
+}
+
+.psych-eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.psych-emoji {
+  font-size: 2.4rem;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.psych-title {
+  font-family: "Jua", sans-serif;
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+
+.psych-desc {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.trait-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.trait-bar-row {
+  display: grid;
+  grid-template-columns: 92px 1fr 40px;
+  align-items: center;
+  gap: 8px;
+}
+
+.trait-bar-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.trait-bar-track {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.trait-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--a-color), var(--b-color));
+}
+
+.trait-bar-pct {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.btn.kakao {
+  background: #fee500;
+  color: #191919;
 }
 
 .app-footer {
