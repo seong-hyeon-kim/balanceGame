@@ -331,18 +331,38 @@
       return;
     }
 
+    // 카카오 공유는 link에 실제 http(s) 주소가 필요하다. file://로 열어 테스트 중이면
+    // 무조건 실패하므로 미리 걸러서 클립보드 복사로 대체한다.
+    if (location.protocol === "file:") {
+      shareResult();
+      alert(
+        "카카오톡 공유는 실제로 배포된 https:// 주소에서만 동작해요.\n" +
+          "지금은 로컬 파일이라 결과를 클립보드에 복사했어요."
+      );
+      return;
+    }
+
     const typeText = lastResultType ? `나는 "${lastResultType.title}" 타입!` : "밸런스 게임 결과";
     const pageUrl = window.location.href.split("#")[0];
 
-    Kakao.Share.sendDefault({
-      objectType: "text",
-      text: `🔥 밸런스 게임 결과\n${typeText}\n\n너라면 뭘 고를 거야?`,
-      link: {
-        mobileWebUrl: pageUrl,
-        webUrl: pageUrl,
-      },
-      buttonTitle: "나도 해보기",
-    });
+    try {
+      Kakao.Share.sendDefault({
+        objectType: "text",
+        text: `🔥 밸런스 게임 결과\n${typeText}\n\n너라면 뭘 고를 거야?`,
+        link: {
+          mobileWebUrl: pageUrl,
+          webUrl: pageUrl,
+        },
+        buttonTitle: "나도 해보기",
+      });
+    } catch (e) {
+      shareResult();
+      alert(
+        "카카오톡 공유 요청에 실패했어요. 이 사이트 도메인이 카카오 개발자 콘솔의\n" +
+          "[앱 설정 > 플랫폼 > Web]에 등록되어 있는지 확인해주세요.\n" +
+          "지금은 대신 결과를 클립보드에 복사했어요."
+      );
+    }
   }
 
   optionA.addEventListener("click", () => reveal("a"));

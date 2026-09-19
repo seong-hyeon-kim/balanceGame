@@ -279,6 +279,14 @@ body {
   justify-content: center;
 }
 
+.controls-wide {
+  width: 100%;
+}
+
+.controls-wide .btn {
+  flex: 1;
+}
+
 .btn {
   border: none;
   border-radius: 999px;
@@ -314,20 +322,28 @@ body {
   padding: 32px 24px;
   text-align: center;
   box-shadow: 0 20px 40px rgba(30, 12, 60, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+}
+
+.result .eyebrow {
+  margin: 0;
 }
 
 .result h2 {
   font-family: "Jua", sans-serif;
-  margin: 4px 0 12px;
+  margin: 0;
 }
 
 .result p {
+  margin: 0;
   color: var(--text-muted);
   line-height: 1.6;
 }
 
 .psych-card {
-  margin-top: 20px;
   padding: 20px 18px;
   border-radius: var(--radius-md);
   background: linear-gradient(160deg, var(--a-color-soft), var(--b-color-soft));
