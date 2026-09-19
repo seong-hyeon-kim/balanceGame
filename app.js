@@ -19,7 +19,6 @@
   const percentA = document.getElementById("percentA");
   const percentB = document.getElementById("percentB");
   const hint = document.getElementById("hint");
-  const nextBtn = document.getElementById("nextBtn");
   const shuffleBtn = document.getElementById("shuffleBtn");
   const resultScreen = document.getElementById("resultScreen");
   const resultSummary = document.getElementById("resultSummary");
@@ -31,6 +30,8 @@
   const psychTitle = document.getElementById("psychTitle");
   const psychDesc = document.getElementById("psychDesc");
   const traitBars = document.getElementById("traitBars");
+
+  const AUTO_ADVANCE_DELAY_MS = 900;
 
   let currentCategory = CATEGORIES[0].id;
   let deck = [];
@@ -140,8 +141,6 @@
 
   function renderQuestion() {
     answered = false;
-    nextBtn.disabled = true;
-    nextBtn.textContent = index === deck.length - 1 ? "결과 보기 →" : "다음 질문 →";
     optionA.classList.remove("selected", "revealed");
     optionB.classList.remove("selected", "revealed");
     barA.style.width = "0%";
@@ -181,10 +180,10 @@
     optionB.classList.add("revealed");
     if (choice === "a") optionA.classList.add("selected");
     if (choice === "b") optionB.classList.add("selected");
-    hint.textContent = "다른 사람들의 선택 비율이에요 (이 브라우저 누적 기준)";
+    hint.textContent = "다른 사람들의 선택 비율이에요 · 잠시 후 다음 질문으로 넘어가요";
 
     history.push({ question: q, choice });
-    nextBtn.disabled = false;
+    setTimeout(goNext, AUTO_ADVANCE_DELAY_MS);
   }
 
   function goNext() {
@@ -365,7 +364,6 @@
 
   optionA.addEventListener("click", () => reveal("a"));
   optionB.addEventListener("click", () => reveal("b"));
-  nextBtn.addEventListener("click", goNext);
   shuffleBtn.addEventListener("click", startGame);
   restartBtn.addEventListener("click", startGame);
   shareBtn.addEventListener("click", shareResult);
