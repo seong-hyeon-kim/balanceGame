@@ -209,18 +209,19 @@
   function computeResultType(counts) {
     const entries = Object.entries(counts);
     if (entries.length === 0) return null;
+    const types = TYPES_BY_CATEGORY[currentCategory];
     const total = entries.reduce((sum, [, c]) => sum + c, 0);
     const maxCount = Math.max(...entries.map(([, c]) => c));
     const topKeys = entries.filter(([, c]) => c === maxCount).map(([k]) => k);
     const pct = Math.round((maxCount / total) * 100);
 
     if (topKeys.length === 1) {
-      return { ...TYPES[topKeys[0]], topKeys, pct };
+      return { ...types[topKeys[0]], topKeys, pct };
     }
 
     const [keyA, keyB] = topKeys;
-    const a = TYPES[keyA];
-    const b = TYPES[keyB];
+    const a = types[keyA];
+    const b = types[keyB];
     return {
       key: `${keyA}-${keyB}`,
       name: `${a.name} + ${b.name}`,
@@ -249,14 +250,17 @@
     psychDesc.textContent = resultType.desc;
 
     // 가장 높은 지표(들)만 보여준다. 다른 유형이 궁금하면 다시 플레이하게 유도하는 용도.
+    const types = TYPES_BY_CATEGORY[currentCategory];
     const rows = resultType.topKeys
       .map((key) => {
-        const trait = TYPES[key];
+        const trait = types[key];
         return `
           <div class="trait-bar-row">
             <span class="trait-bar-label">${trait.emoji} ${trait.name}</span>
-            <span class="trait-bar-track"><span class="trait-bar-fill" style="width:${resultType.pct}%"></span></span>
-            <span class="trait-bar-pct">${resultType.pct}%</span>
+            <span class="trait-bar-meter">
+              <span class="trait-bar-track"><span class="trait-bar-fill" style="width:${resultType.pct}%"></span></span>
+              <span class="trait-bar-pct">${resultType.pct}%</span>
+            </span>
           </div>
         `;
       })

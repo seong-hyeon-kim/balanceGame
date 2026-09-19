@@ -70,16 +70,45 @@ body {
   opacity: 0.9;
 }
 
+.category-bar-wrap {
+  position: relative;
+  margin: 4px 0;
+}
+
+.category-bar-wrap::before,
+.category-bar-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.category-bar-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-start), transparent);
+}
+
+.category-bar-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-start), transparent);
+}
+
 .category-bar {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 4px 2px 8px;
-  scrollbar-width: thin;
+  padding: 4px 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .category-bar::-webkit-scrollbar {
-  height: 4px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .chip {
@@ -384,17 +413,22 @@ body {
 }
 
 .trait-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trait-bar-row .trait-bar-meter {
   display: grid;
-  grid-template-columns: 92px 1fr 40px;
+  grid-template-columns: 1fr 40px;
   align-items: center;
   gap: 8px;
 }
 
 .trait-bar-label {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-main);
-  white-space: nowrap;
 }
 
 .trait-bar-track {

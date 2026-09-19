@@ -8,52 +8,59 @@ const CATEGORIES = [
   { id: "digital", name: "디지털·SNS", emoji: "📱" },
 ];
 
-// 선택지마다 붙는 성향 태그. 게임이 끝나면 가장 많이 고른 성향으로
-// "당신은 이런 타입!" 결과를 보여주는 데 쓰인다.
-// adventure(모험형) / stability(안정형) / emotion(감성형)
-// logic(이성형) / freedom(자유형) / hustle(노력형)
-const TYPES = {
-  adventure: {
-    key: "adventure",
-    name: "모험형",
-    emoji: "🎢",
-    title: "짜릿함 없인 못 사는 모험가",
-    desc: "안정보다는 스릴! 새로운 자극과 변화를 즐기는 당신은 어디서든 이야깃거리를 몰고 다니는 타입이에요.",
+// 선택지마다 붙는 성향 태그(ta/tb)는 아래 6개 축을 공유한다:
+// adventure / stability / emotion / logic / freedom / hustle
+// 다만 "당신은 이런 타입!" 결과는 카테고리마다 다른 캐릭터로 보여주기 위해,
+// 같은 축이라도 카테고리별로 이름·설명이 다른 TYPES_BY_CATEGORY를 사용한다.
+// (카테고리 6개 × 축 6개 = 36가지 결과 유형)
+const TYPES_BY_CATEGORY = {
+  love: {
+    adventure: { key: "adventure", name: "롤러코스터 연애파", emoji: "🎢", title: "짜릿함이 최고! 롤러코스터 연애파", desc: "뜨겁고 드라마틱한 연애를 즐기는 당신. 잔잔한 것보단 심장 뛰는 순간들이 쌓여야 진짜 사랑한다고 느껴요." },
+    stability: { key: "stability", name: "편안함 최고 안정형", emoji: "🛋️", title: "오래오래, 편안함이 최고인 안정형", desc: "화려한 이벤트보다 한결같음이 좋은 당신. 조용하고 예측 가능한 관계에서 진짜 행복을 느껴요." },
+    emotion: { key: "emotion", name: "감성 충만 로맨티스트", emoji: "💗", title: "마음 가는 대로, 감성 충만 로맨티스트", desc: "논리보다 마음이 먼저 움직이는 당신. 분위기와 감정, 관계의 온도를 무엇보다 중요하게 여겨요." },
+    logic: { key: "logic", name: "현실적인 조건파", emoji: "🧮", title: "손해는 절대 못 참지, 현실적인 조건파", desc: "설렘보다 조건과 실속을 먼저 따지는 당신. 감정에 휘둘리기보다 합리적인 판단을 하는 연애 스타일이에요." },
+    freedom: { key: "freedom", name: "자유로운 썸 타는 중", emoji: "🕊️", title: "얽매이는 건 NO, 자유로운 썸 타는 중", desc: "밀어붙이는 관계는 부담스러운 당신. 내 페이스대로, 가볍고 자유롭게 만나는 걸 선호해요." },
+    hustle: { key: "hustle", name: "적극적 어택형", emoji: "🔥", title: "직진만이 답! 적극적 어택형", desc: "가만히 기다리는 건 못 참는 당신. 마음에 들면 먼저 다가가고, 노력을 아끼지 않는 연애를 해요." },
   },
-  stability: {
-    key: "stability",
-    name: "안정형",
-    emoji: "🛋️",
-    title: "평온한 하루가 최고의 하루",
-    desc: "예측 가능한 편안함을 사랑하는 당신. 무리한 도전보다 꾸준하고 안정적인 루틴에서 행복을 찾아요.",
+  food: {
+    adventure: { key: "adventure", name: "맵부심 뿜뿜 모험가", emoji: "🌶️", title: "자극 없인 못 살아, 맵부심 뿜뿜 모험가", desc: "매콤하고 자극적인 맛을 즐기는 당신. 새로운 메뉴, 극한의 맛에 도전하는 게 스트레스 해소법이에요." },
+    stability: { key: "stability", name: "국룰 소울푸드파", emoji: "🍗", title: "역시 이 맛이지, 국룰 소울푸드파", desc: "검증된 익숙한 메뉴가 최고인 당신. 모험보다 실패 없는 맛을 선택하는 편이에요." },
+    emotion: { key: "emotion", name: "감성 디저트파", emoji: "🍰", title: "달콤함이 힐링, 감성 디저트파", desc: "맛에서도 위로를 찾는 당신. 분위기 있는 한 끼, 달콤한 디저트에서 행복을 느껴요." },
+    logic: { key: "logic", name: "가성비 실속파", emoji: "💳", title: "손해보는 장사는 없다, 가성비 실속파", desc: "맛도 중요하지만 가격과 양을 꼼꼼히 따지는 당신. 합리적인 소비가 최우선이에요." },
+    freedom: { key: "freedom", name: "자유로운 편의파", emoji: "🍱", title: "규칙 없이 편하게, 자유로운 편의파", desc: "격식보다 간편함을 중시하는 당신. 언제 어디서든 편하게 먹는 게 최고예요." },
+    hustle: { key: "hustle", name: "든든한 열정파", emoji: "🍖", title: "먹는 것도 열심히! 든든한 열정파", desc: "제대로 배부르게, 확실하게 챙겨먹는 당신. 대충 때우기보단 확실한 한 끼를 선호해요." },
   },
-  emotion: {
-    key: "emotion",
-    name: "감성형",
-    emoji: "💗",
-    title: "마음 가는 대로, 감성 충만 로맨티스트",
-    desc: "논리보다 마음이 먼저 움직이는 당신. 분위기와 감정, 관계의 온도를 무엇보다 중요하게 여겨요.",
+  extreme: {
+    adventure: { key: "adventure", name: "진짜 상극단 모험가", emoji: "🎢", title: "짜릿함 없인 못 사는 진짜 모험가", desc: "위험 부담이 있어도 스릴을 선택하는 당신. 극한 상황에서도 눈을 반짝이는 타입이에요." },
+    stability: { key: "stability", name: "안전제일 신중파", emoji: "🛡️", title: "돌다리도 두들기는, 안전제일 신중파", desc: "리스크는 최대한 피하고 싶은 당신. 확실하고 예측 가능한 선택을 선호해요." },
+    emotion: { key: "emotion", name: "마음 가는 대로 감성파", emoji: "💗", title: "논리보다 마음, 감성 우선파", desc: "극한 상황에서도 이성보다 마음이 이끄는 대로 선택하는 당신이에요." },
+    logic: { key: "logic", name: "냉철한 손익계산러", emoji: "🧮", title: "손해는 절대 못 참지, 냉철한 계산러", desc: "극한 선택 앞에서도 이득과 손해를 정확히 계산하는 당신. 감정보다 논리가 우선이에요." },
+    freedom: { key: "freedom", name: "자유로운 반항아", emoji: "🕊️", title: "규칙 따위 NO, 자유로운 반항아", desc: "정해진 틀에 갇히는 걸 세상에서 제일 싫어하는 당신. 극단적이어도 내 방식이 최고예요." },
+    hustle: { key: "hustle", name: "악바리 근성파", emoji: "🔥", title: "포기란 없다, 악바리 근성파", desc: "힘들어도 버티고 노력하는 쪽을 선택하는 당신. 편한 길보다 결과를 위한 길을 가요." },
   },
-  logic: {
-    key: "logic",
-    name: "이성형",
-    emoji: "🧮",
-    title: "손해는 절대 못 참지, 계산 빠른 현실주의자",
-    desc: "효율과 실속을 최우선으로 따지는 당신. 감정에 휘둘리기보다 합리적인 선택을 하는 타입이에요.",
+  life: {
+    adventure: { key: "adventure", name: "즉흥 이벤트파", emoji: "🌪️", title: "매일이 새로워야지, 즉흥 이벤트파", desc: "똑같은 하루는 지루한 당신. 예측 불가능한 변화와 새로운 자극을 즐겨요." },
+    stability: { key: "stability", name: "루틴 지킴이", emoji: "🛋️", title: "한결같이 편안하게, 루틴 지킴이", desc: "정해진 패턴 안에서 안정감을 느끼는 당신. 무리한 변화보다 꾸준함이 답이에요." },
+    emotion: { key: "emotion", name: "감성 아날로그파", emoji: "📔", title: "손맛이 최고, 감성 아날로그파", desc: "효율보다 정서적 만족을 중시하는 당신. 다이어리나 반려동물처럼 마음이 가는 것들을 소중히 해요." },
+    logic: { key: "logic", name: "계획형 미니멀리스트", emoji: "🧺", title: "군더더기는 NO, 계획형 미니멀리스트", desc: "효율과 정돈을 중시하는 당신. 불필요한 건 덜어내고 꼭 필요한 것만 남기는 걸 선호해요." },
+    freedom: { key: "freedom", name: "내 맘대로 자유파", emoji: "🚪", title: "정해진 틀은 싫어, 내 맘대로 자유파", desc: "억지로 루틴에 맞추기보다 그날그날 내키는 대로 사는 걸 즐기는 당신이에요." },
+    hustle: { key: "hustle", name: "갓생 챌린저", emoji: "🔥", title: "갓생 그 자체, 갓생 챌린저", desc: "가만히 있는 걸 못 견디는 당신. 목표를 위해서라면 오늘의 편함쯤은 기꺼이 포기해요." },
   },
-  freedom: {
-    key: "freedom",
-    name: "자유형",
-    emoji: "🕊️",
-    title: "규칙 따위 NO, 자유로운 영혼",
-    desc: "얽매이는 걸 세상에서 제일 싫어하는 당신. 내 페이스, 내 방식대로 사는 게 최고의 행복이에요.",
+  money: {
+    adventure: { key: "adventure", name: "과감한 베팅러", emoji: "🎲", title: "인생은 한방! 과감한 베팅러", desc: "리스크가 있어도 큰 기회를 노리는 당신. 안전한 길보다 도전적인 선택에 끌려요." },
+    stability: { key: "stability", name: "안정적인 월급쟁이형", emoji: "🏦", title: "꾸준함이 최고, 안정적인 월급쟁이형", desc: "확실하고 예측 가능한 수입을 선호하는 당신. 리스크보다 안정을 최우선으로 둬요." },
+    emotion: { key: "emotion", name: "적성 우선파", emoji: "🎯", title: "돈보다 마음이 편해야지, 적성 우선파", desc: "숫자보다 만족감을 중요하게 여기는 당신. 좋아하는 일을 할 때 진짜 행복을 느껴요." },
+    logic: { key: "logic", name: "냉철한 현실주의자", emoji: "💼", title: "손해는 절대 못 참지, 냉철한 현실주의자", desc: "감정보다 숫자와 조건을 먼저 따지는 당신. 효율과 실속을 최우선으로 판단해요." },
+    freedom: { key: "freedom", name: "워라밸 최우선파", emoji: "🏡", title: "내 시간이 최고, 워라밸 최우선파", desc: "돈보다 자유로운 시간과 여유를 중시하는 당신. 얽매이는 건 딱 질색이에요." },
+    hustle: { key: "hustle", name: "커리어 불도저", emoji: "🚀", title: "일단 부딪혀! 커리어 불도저", desc: "목표를 위해서라면 오늘의 편함쯤은 기꺼이 포기하는 당신. 성장과 성과에 진심이에요." },
   },
-  hustle: {
-    key: "hustle",
-    name: "노력형",
-    emoji: "🔥",
-    title: "갓생 그 자체, 노력형 인간",
-    desc: "가만히 있는 걸 못 견디는 당신. 목표를 위해서라면 오늘의 편함쯤은 기꺼이 포기하는 타입이에요.",
+  digital: {
+    adventure: { key: "adventure", name: "콘텐츠 헤비 유저", emoji: "📺", title: "몰아보기 인생, 콘텐츠 헤비 유저", desc: "짜릿하고 몰입감 있는 콘텐츠를 찾아다니는 당신. 새로운 자극이 있는 곳이라면 어디든 뛰어들어요." },
+    stability: { key: "stability", name: "디지털 미니멀리스트", emoji: "🌿", title: "차분하고 담백하게, 디지털 미니멀리스트", desc: "과한 자극보다 안정적이고 익숙한 디지털 습관을 선호하는 당신이에요." },
+    emotion: { key: "emotion", name: "소통 감성파", emoji: "💗", title: "마음이 먼저, 소통 감성파", desc: "온라인에서도 감정과 관계를 중요하게 여기는 당신. 진심이 담긴 소통을 좋아해요." },
+    logic: { key: "logic", name: "효율적 실속러", emoji: "🔋", title: "쓸데없는 건 NO, 효율적 실속러", desc: "기능과 실용성을 꼼꼼히 따지는 당신. 감성보다 효율적인 선택이 우선이에요." },
+    freedom: { key: "freedom", name: "프라이버시 수호자", emoji: "🕊️", title: "내 공간은 소중해, 프라이버시 수호자", desc: "얽매이거나 노출되는 걸 싫어하는 당신. 온라인에서도 내 자유와 사생활을 지키는 게 중요해요." },
+    hustle: { key: "hustle", name: "SNS 인플루언서 감성", emoji: "📈", title: "적극적으로 보여줘! 인플루언서 감성", desc: "가만히 있기보단 적극적으로 표현하고 도전하는 당신. 온라인에서도 존재감을 드러내는 걸 즐겨요." },
   },
 };
 
