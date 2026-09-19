@@ -32,7 +32,7 @@
   const psychDesc = document.getElementById("psychDesc");
   const traitBars = document.getElementById("traitBars");
 
-  let currentCategory = "all";
+  let currentCategory = CATEGORIES[0].id;
   let deck = [];
   let index = 0;
   let answered = false;
@@ -98,11 +98,7 @@
   }
 
   function buildDeck(categoryId) {
-    const pool =
-      categoryId === "all"
-        ? QUESTIONS
-        : QUESTIONS.filter((q) => q.cat === categoryId);
-    return shuffle(pool);
+    return shuffle(QUESTIONS.filter((q) => q.cat === categoryId));
   }
 
   function categoryLabel(catId) {
@@ -214,11 +210,13 @@
   function computeResultType(counts) {
     const entries = Object.entries(counts);
     if (entries.length === 0) return null;
+    const total = entries.reduce((sum, [, c]) => sum + c, 0);
     const maxCount = Math.max(...entries.map(([, c]) => c));
     const topKeys = entries.filter(([, c]) => c === maxCount).map(([k]) => k);
+    const pct = Math.round((maxCount / total) * 100);
 
     if (topKeys.length === 1) {
-      return TYPES[topKeys[0]];
+      return { ...TYPES[topKeys[0]], topKeys, pct };
     }
 
     const [keyA, keyB] = topKeys;
@@ -230,6 +228,8 @@
       emoji: `${a.emoji}${b.emoji}`,
       title: `반반! ${a.name}×${b.name} 밸런서`,
       desc: `${a.desc} 동시에, ${b.desc}`,
+      topKeys,
+      pct,
     };
   }
 
@@ -249,17 +249,15 @@
     psychTitle.textContent = resultType.title;
     psychDesc.textContent = resultType.desc;
 
-    const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
-    const rows = Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([key, count]) => {
+    // 가장 높은 지표(들)만 보여준다. 다른 유형이 궁금하면 다시 플레이하게 유도하는 용도.
+    const rows = resultType.topKeys
+      .map((key) => {
         const trait = TYPES[key];
-        const pct = Math.round((count / total) * 100);
         return `
           <div class="trait-bar-row">
             <span class="trait-bar-label">${trait.emoji} ${trait.name}</span>
-            <span class="trait-bar-track"><span class="trait-bar-fill" style="width:${pct}%"></span></span>
-            <span class="trait-bar-pct">${pct}%</span>
+            <span class="trait-bar-track"><span class="trait-bar-fill" style="width:${resultType.pct}%"></span></span>
+            <span class="trait-bar-pct">${resultType.pct}%</span>
           </div>
         `;
       })

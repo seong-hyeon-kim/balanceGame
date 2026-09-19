@@ -1,6 +1,5 @@
 // 최근 SNS(틱톡·인스타·커뮤니티)에서 자주 화제가 된 밸런스 게임 주제 모음
 const CATEGORIES = [
-  { id: "all", name: "전체", emoji: "✨" },
   { id: "love", name: "연애·썸", emoji: "💘" },
   { id: "food", name: "음식", emoji: "🍗" },
   { id: "extreme", name: "마라맛 극한선택", emoji: "🌶️" },
