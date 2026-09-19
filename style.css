@@ -70,45 +70,31 @@ body {
   opacity: 0.9;
 }
 
-.category-bar-wrap {
-  position: relative;
-  margin: 4px 0;
-}
-
-.category-bar-wrap::before,
-.category-bar-wrap::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 28px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.category-bar-wrap::before {
-  left: 0;
-  background: linear-gradient(to right, var(--bg-start), transparent);
-}
-
-.category-bar-wrap::after {
-  right: 0;
-  background: linear-gradient(to left, var(--bg-start), transparent);
-}
-
 .category-bar {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 4px 2px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  padding: 4px 2px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.55) rgba(255, 255, 255, 0.15);
 }
 
 .category-bar::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+  height: 6px;
+}
+
+.category-bar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+
+.category-bar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+}
+
+.category-bar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .chip {
