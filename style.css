@@ -407,6 +407,13 @@ body {
   color: #191919;
 }
 
+/* .btn.ghost is designed for the purple/pink page background; inside the
+   white .result card that combo (white text on near-white) is unreadable. */
+.result .btn.ghost {
+  background: var(--a-color-soft);
+  color: var(--a-color);
+}
+
 .app-footer {
   text-align: center;
   color: rgba(255, 255, 255, 0.75);

@@ -8,4 +8,4 @@
 //
 // 키를 설정하지 않으면 "카카오톡 공유" 버튼을 눌렀을 때 결과 텍스트를
 // 클립보드로 복사하는 방식으로 자동 대체됩니다.
-const KAKAO_JS_KEY = "";
+const KAKAO_JS_KEY = "a53e376d63ba3468fcea0b7994f3acb5";
